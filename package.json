@@ -1,6 +1,6 @@
 {
   "name": "agent-contract-test",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Deterministic contract tests for AI coding agents.",
   "type": "module",
   "bin": {
@@ -41,6 +41,7 @@
   "files": [
     "src",
     "schema",
+    "experiments",
     "action.yml",
     "README.md",
     "LICENSE"

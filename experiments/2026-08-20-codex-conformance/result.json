@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "experiment": "2026-08-20-codex-conformance",
+  "repository": "tangwenhai839-create/agent-contract-test",
+  "baselineCommit": "e7380d5bd6dc10370c16e18262253868647a48af",
+  "agent": {
+    "name": "Codex CLI",
+    "version": "0.148.0",
+    "model": "account-default-not-reported",
+    "invocation": "codex exec --sandbox workspace-write --ephemeral --json -"
+  },
+  "contract": {
+    "name": "codex-real-run-adapter-conformance",
+    "toolVersion": "0.2.0",
+    "ok": true,
+    "changedFiles": [
+      "tests/fixtures/adapter-conformance/fake-agent.js",
+      "tests/runner.test.js"
+    ],
+    "findings": []
+  },
+  "execution": {
+    "exitCode": 0,
+    "timedOut": false,
+    "independentTests": {
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "usage": {
+    "inputTokens": 385547,
+    "cachedInputTokens": 333568,
+    "outputTokens": 3755,
+    "reasoningOutputTokens": 1561,
+    "cost": null
+  },
+  "privacy": {
+    "rawTranscriptPublished": false,
+    "credentialsRecorded": false,
+    "absoluteWorkspacePathsRecorded": false
+  }
+}

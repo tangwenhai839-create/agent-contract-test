@@ -9,7 +9,7 @@ import { runContract } from "./runner.js";
 import { verifyContract } from "./verify.js";
 import { toSarif } from "./sarif.js";
 
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 
 function printHelp() {
   console.log(`Agent Contract Test ${VERSION}

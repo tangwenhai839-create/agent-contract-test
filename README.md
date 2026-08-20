@@ -156,6 +156,10 @@ Add `upload-sarif: true` and grant `security-events: write` to publish failed co
 4. **Fail clearly:** invalid contracts and failed commands return non-zero exit codes.
 5. **Human authority:** a contract is reviewable before an agent receives the task.
 
+## Real-agent evidence
+
+The [experiments directory](experiments/) publishes reproducible runs against pinned public revisions. The first recorded run used Codex CLI 0.148.0 on public issue #3: it stayed within the two allowed test files and passed all contract assertions plus an independent 7/7 test rerun. Passing and failing future runs will be recorded without model-based grading.
+
 ## Roadmap
 
 - v0.2: built-in Codex, Claude Code, and Gemini CLI adapters plus SARIF/Code Scanning output.

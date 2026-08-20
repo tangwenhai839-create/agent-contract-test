@@ -2,6 +2,14 @@
 
 All notable changes are documented here.
 
+## 0.2.1 — 2026-08-20
+
+### Added
+
+- First reproducible real-agent experiment for public issue #3.
+- Sanitized JSON result, SARIF report, exact candidate patch, and independent verification record.
+- Public experiments index and README evidence link.
+
 ## 0.2.0 — 2026-08-20
 
 ### Added

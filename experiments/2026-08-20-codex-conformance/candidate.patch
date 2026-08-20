@@ -1,0 +1,66 @@
+diff --git a/tests/runner.test.js b/tests/runner.test.js
+index 593558c..94f258e 100644
+--- a/tests/runner.test.js
++++ b/tests/runner.test.js
+@@ -1,26 +1,32 @@
+ import test from "node:test";
+ import assert from "node:assert/strict";
+ import fs from "node:fs/promises";
+-import os from "node:os";
+ import path from "node:path";
++import { fileURLToPath } from "node:url";
+ import { runContract } from "../src/runner.js";
+ import { adapterProcess, listAdapters } from "../src/adapters.js";
+ 
+-test("runner executes in a disposable copy and verifies the result", async () => {
+-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "actest-runner-"));
+-  await fs.mkdir(path.join(root, "src"));
+-  await fs.writeFile(path.join(root, "agent.js"), "import fs from 'node:fs'; fs.writeFileSync('src/result.js', 'export const result = 42;\\n');\n");
++test("synthetic adapter receives the prompt and passes contract verification", async () => {
++  const root = fileURLToPath(new URL("fixtures/adapter-conformance", import.meta.url));
++  const prompt = "Create the cross-platform conformance result";
+   const contract = {
+     version: 1,
+-    name: "runner-test",
+-    task: { prompt: "Write the result" },
+-    boundaries: { allow: ["src/**"] },
+-    assertions: [{ type: "file_contains", path: "src/result.js", pattern: "42" }]
++    name: "synthetic-adapter-conformance",
++    task: { prompt },
++    boundaries: { allow: ["src/result.js"], maxChangedFiles: 1 },
++    assertions: [
++      { type: "file_exists", path: "src/result.js" },
++      { type: "file_contains", path: "src/result.js", pattern: prompt }
++    ]
+   };
+-  const result = await runContract(contract, { root, command: "node agent.js", keepWorkspace: false });
++
++  const result = await runContract(contract, { root, command: "node fake-agent.js", keepWorkspace: false });
++
+   assert.equal(result.ok, true);
+-  await assert.rejects(() => fs.access(path.join(root, "src", "result.js")));
+-  await fs.rm(root, { recursive: true, force: true });
++  assert.deepEqual(result.changedFiles, ["src/result.js"]);
++  assert.deepEqual(result.findings, []);
++  assert.equal(result.execution.exitCode, 0);
++  await assert.rejects(() => fs.access(path.join(root, "src", "result.js")), { code: "ENOENT" });
+ });
+ 
+ test("built-in adapters use non-interactive edit modes", () => {
+diff --git a/tests/fixtures/adapter-conformance/fake-agent.js b/tests/fixtures/adapter-conformance/fake-agent.js
+new file mode 100644
+index 0000000..347cd0a
+--- /dev/null
++++ b/tests/fixtures/adapter-conformance/fake-agent.js
+@@ -0,0 +1,11 @@
++const fs = require("node:fs");
++const path = require("node:path");
++
++const prompt = process.env.AGENT_CONTRACT_PROMPT;
++if (!prompt) throw new Error("AGENT_CONTRACT_PROMPT was not provided");
++
++fs.mkdirSync("src", { recursive: true });
++fs.writeFileSync(
++  path.join("src", "result.js"),
++  `export const taskPrompt = ${JSON.stringify(prompt)};\n`
++);

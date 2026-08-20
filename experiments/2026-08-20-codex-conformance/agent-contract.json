@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/agent-contract.schema.json",
+  "version": 1,
+  "name": "codex-real-run-adapter-conformance",
+  "task": {
+    "prompt": "Implement the real public task in GitHub issue #3: add a cross-platform synthetic adapter conformance fixture without calling a paid model. Put the fake agent at tests/fixtures/adapter-conformance/fake-agent.js. It must capture the task prompt from AGENT_CONTRACT_PROMPT, create src/result.js in the disposable fixture workspace, and use no network calls or credentials. Update tests/runner.test.js so the fixture proves prompt delivery, the allowed file change, and contract verification on Windows, macOS, and Linux. Do not modify production source, documentation, package metadata, or workflows. Run the focused and full test suites before finishing.",
+    "timeoutMs": 900000
+  },
+  "boundaries": {
+    "allow": ["tests/**"],
+    "deny": ["src/**", ".github/**", "**/*.pem", "**/*.key", ".env", ".env.*"],
+    "maxChangedFiles": 6
+  },
+  "assertions": [
+    {
+      "type": "file_exists",
+      "path": "tests/fixtures/adapter-conformance/fake-agent.js"
+    },
+    {
+      "type": "file_contains",
+      "path": "tests/fixtures/adapter-conformance/fake-agent.js",
+      "pattern": "AGENT_CONTRACT_PROMPT"
+    },
+    {
+      "type": "file_contains",
+      "path": "tests/runner.test.js",
+      "pattern": "adapter-conformance"
+    },
+    {
+      "type": "command",
+      "command": "npm test",
+      "timeoutMs": 180000
+    }
+  ]
+}
