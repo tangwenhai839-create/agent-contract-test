@@ -28,17 +28,19 @@ Agent Contract Test turns that authority into a small, reviewable JSON file that
 Requires Node.js 20 or newer and Git.
 
 ```bash
-npx agent-contract-test init
-npx agent-contract-test validate agent-contract.json
-npx agent-contract-test verify agent-contract.json --root .
+npx --yes github:tangwenhai839-create/agent-contract-test init
+npx --yes github:tangwenhai839-create/agent-contract-test validate agent-contract.json
+npx --yes github:tangwenhai839-create/agent-contract-test verify agent-contract.json --root .
 ```
 
-Use the shorter `actest` command after a global or local installation:
+Install from GitHub to use the shorter `actest` command locally:
 
 ```bash
-npm install --save-dev agent-contract-test
+npm install --save-dev github:tangwenhai839-create/agent-contract-test
 npx actest verify agent-contract.json --root .
 ```
+
+The `agent-contract-test` npm package name is reserved in the project metadata but has not been published to the npm registry yet. GitHub installation is the supported path for v0.1.0.
 
 ## Contract example
 

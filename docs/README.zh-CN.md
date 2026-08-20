@@ -14,17 +14,19 @@ Agent Contract Test 是面向 Codex、Claude Code、Copilot、Gemini、Cursor �
 ## 快速使用
 
 ```bash
-npx agent-contract-test init
-npx agent-contract-test validate agent-contract.json
-npx agent-contract-test verify agent-contract.json --root .
+npx --yes github:tangwenhai839-create/agent-contract-test init
+npx --yes github:tangwenhai839-create/agent-contract-test validate agent-contract.json
+npx --yes github:tangwenhai839-create/agent-contract-test verify agent-contract.json --root .
 ```
 
 契约使用JSON格式，适合人工审阅、版本管理和GitHub Actions持续检查。
 
+目前v0.1.0通过GitHub安装，尚未发布到npm公共仓库。
+
 ## 运行代理实验
 
 ```bash
-npx actest run agent-contract.json \
+npx --yes github:tangwenhai839-create/agent-contract-test run agent-contract.json \
   --root examples/basic/fixture \
   --command "你的代理命令" \
   --allow-exec
