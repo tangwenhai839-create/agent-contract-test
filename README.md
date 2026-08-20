@@ -1,5 +1,7 @@
 # Agent Contract Test
 
+English | [简体中文](docs/README.zh-CN.md) | [日本語](docs/README.ja.md)
+
 **Deterministic contract tests for AI coding agents.**
 
 Codex, Claude Code, Copilot, Gemini, Cursor, and other coding agents are probabilistic. Your repository rules should not be.
@@ -127,7 +129,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: tangwenhai839-create/agent-contract-test@v0.2.0
+      - uses: tangwenhai839-create/agent-contract-test@v0.2
         with:
           contract: agent-contract.json
           base: origin/${{ github.base_ref }}
