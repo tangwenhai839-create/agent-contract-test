@@ -15,10 +15,10 @@ export async function verifyContract(contract, options) {
   }
   for (const file of files) {
     if (boundaries.deny?.length && matchesAny(file, boundaries.deny)) {
-      findings.push(finding("denied-path", "error", `${file} matches a denied path`));
+      findings.push(finding("denied-path", "error", `${file} matches a denied path`, file));
     }
     if (boundaries.allow?.length && !matchesAny(file, boundaries.allow)) {
-      findings.push(finding("outside-allowed-paths", "error", `${file} is outside allowed paths`));
+      findings.push(finding("outside-allowed-paths", "error", `${file} is outside allowed paths`, file));
     }
   }
 
@@ -42,19 +42,19 @@ async function evaluateAssertion(assertion, root) {
   const target = safePath(root, assertion.path);
   const exists = await fs.access(target).then(() => true, () => false);
   if (assertion.type === "file_exists" && !exists) {
-    return finding("file-exists", "error", `${assertion.path} does not exist`);
+    return finding("file-exists", "error", `${assertion.path} does not exist`, assertion.path);
   }
   if (assertion.type === "file_not_exists" && exists) {
-    return finding("file-not-exists", "error", `${assertion.path} exists but must not`);
+    return finding("file-not-exists", "error", `${assertion.path} exists but must not`, assertion.path);
   }
   if (!exists || !["file_contains", "file_not_contains"].includes(assertion.type)) return null;
   const content = await fs.readFile(target, "utf8");
   const matched = content.includes(assertion.pattern);
   if (assertion.type === "file_contains" && !matched) {
-    return finding("file-contains", "error", `${assertion.path} does not contain the required text`);
+    return finding("file-contains", "error", `${assertion.path} does not contain the required text`, assertion.path);
   }
   if (assertion.type === "file_not_contains" && matched) {
-    return finding("file-not-contains", "error", `${assertion.path} contains forbidden text`);
+    return finding("file-not-contains", "error", `${assertion.path} contains forbidden text`, assertion.path);
   }
   return null;
 }
@@ -85,6 +85,6 @@ function safePath(root, relative) {
   return target;
 }
 
-function finding(rule, severity, message) {
-  return { rule, severity, message };
+function finding(rule, severity, message, file) {
+  return { rule, severity, message, ...(file ? { file } : {}) };
 }

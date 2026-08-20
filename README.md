@@ -28,19 +28,11 @@ Agent Contract Test turns that authority into a small, reviewable JSON file that
 Requires Node.js 20 or newer and Git.
 
 ```bash
-npx --yes github:tangwenhai839-create/agent-contract-test init
-npx --yes github:tangwenhai839-create/agent-contract-test validate agent-contract.json
-npx --yes github:tangwenhai839-create/agent-contract-test verify agent-contract.json --root .
-```
-
-Install from GitHub to use the shorter `actest` command locally:
-
-```bash
-npm install --save-dev github:tangwenhai839-create/agent-contract-test
+npm install --save-dev agent-contract-test
+npx actest init
+npx actest validate agent-contract.json
 npx actest verify agent-contract.json --root .
 ```
-
-The `agent-contract-test` npm package name is reserved in the project metadata but has not been published to the npm registry yet. GitHub installation is the supported path for v0.1.0.
 
 ## Contract example
 
@@ -99,6 +91,26 @@ actest run agent-contract.json \
 
 `run` requires `--allow-exec` because it executes the supplied command. The temporary workspace protects the source checkout from ordinary file edits, but it is **not an OS or network sandbox**. Use a container or ephemeral runner for untrusted commands.
 
+Built-in adapters provide safe, documented defaults for the three major coding-agent CLIs:
+
+```bash
+actest run agent-contract.json --adapter codex --allow-exec
+actest run agent-contract.json --adapter claude --allow-exec
+actest run agent-contract.json --adapter gemini --allow-exec
+```
+
+The selected official CLI must already be installed and authenticated. See [the adapter compatibility guide](docs/adapters.md) for exact invocations and security boundaries.
+
+### Reports
+
+Human output is the default. JSON is available through `--format json` or the backwards-compatible `--json` flag. SARIF 2.1.0 reports integrate with GitHub Code Scanning:
+
+```bash
+actest verify agent-contract.json --format sarif --output results/agent-contract.sarif
+```
+
+See [the security report guide](docs/security-reports.md).
+
 ## GitHub Action
 
 ```yaml
@@ -115,13 +127,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: tangwenhai839-create/agent-contract-test@v0.1.0
+      - uses: tangwenhai839-create/agent-contract-test@v0.2.0
         with:
           contract: agent-contract.json
           base: origin/${{ github.base_ref }}
 ```
 
-## What v0.1 verifies
+Add `upload-sarif: true` and grant `security-events: write` to publish failed contract rules in GitHub Code Scanning.
+
+## What the contract verifies
 
 | Contract feature | Meaning |
 | --- | --- |
@@ -144,8 +158,8 @@ jobs:
 
 ## Roadmap
 
-- v0.2: SARIF output, richer content matchers, reusable contract fragments.
-- v0.3: documented adapters for Codex, Claude Code, Gemini CLI, and GitHub Copilot CLI.
+- v0.2: built-in Codex, Claude Code, and Gemini CLI adapters plus SARIF/Code Scanning output.
+- v0.3: richer content matchers, reusable contract fragments, Markdown and JUnit reports.
 - v0.4: Docker/Dev Container isolation and resource budgets.
 - v0.5: repeated-run reliability matrices and provider comparison reports.
 - v1.0: stable contract schema, signed evidence bundles, and a public compatibility suite.

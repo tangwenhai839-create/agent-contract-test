@@ -2,11 +2,14 @@
 
 import path from "node:path";
 import process from "node:process";
+import fs from "node:fs/promises";
+import { listAdapters } from "./adapters.js";
 import { initContract, loadContract } from "./contract.js";
 import { runContract } from "./runner.js";
 import { verifyContract } from "./verify.js";
+import { toSarif } from "./sarif.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 function printHelp() {
   console.log(`Agent Contract Test ${VERSION}
@@ -16,12 +19,14 @@ Deterministic contract tests for AI coding agents.
 Usage:
   actest init [directory]
   actest validate [contract]
-  actest verify [contract] [--root directory] [--base git-ref] [--json]
-  actest run [contract] --command "agent command" [--root directory] --allow-exec [--json]
+  actest adapters [--json]
+  actest verify [contract] [--root directory] [--base git-ref] [--format human|json|sarif] [--output file]
+  actest run [contract] (--adapter codex|claude|gemini | --command "agent command") --allow-exec
 
 Commands:
   init      Create a starter agent-contract.json
   validate  Validate a contract without changing files
+  adapters  List built-in coding-agent adapters
   verify    Check the current workspace against a contract
   run       Copy the workspace, run an agent command, then verify the result
 
@@ -54,17 +59,30 @@ function parseArgs(args) {
   return { positional, options };
 }
 
-function printResult(result, json) {
-  if (json) {
-    console.log(JSON.stringify(result, null, 2));
-    return;
-  }
-  console.log(`${result.ok ? "PASS" : "FAIL"} ${result.contract}`);
-  console.log(`Checked ${result.changedFiles.length} changed file(s); ${result.findings.length} finding(s).`);
+function humanResult(result) {
+  const lines = [`${result.ok ? "PASS" : "FAIL"} ${result.contract}`];
+  lines.push(`Checked ${result.changedFiles.length} changed file(s); ${result.findings.length} finding(s).`);
   for (const finding of result.findings) {
-    console.log(`- [${finding.severity.toUpperCase()}] ${finding.rule}: ${finding.message}`);
+    lines.push(`- [${finding.severity.toUpperCase()}] ${finding.rule}: ${finding.message}`);
   }
-  if (result.workspace) console.log(`Workspace: ${result.workspace}`);
+  if (result.workspace) lines.push(`Workspace: ${result.workspace}`);
+  return `${lines.join("\n")}\n`;
+}
+
+async function printResult(result, options) {
+  const format = options.json ? "json" : (options.format ?? "human");
+  if (!["human", "json", "sarif"].includes(format)) throw new Error(`Unknown output format: ${format}`);
+  const content = format === "human"
+    ? humanResult(result)
+    : `${JSON.stringify(format === "sarif" ? toSarif(result, VERSION) : result, null, 2)}\n`;
+  if (options.output) {
+    const output = path.resolve(options.output);
+    await fs.mkdir(path.dirname(output), { recursive: true });
+    await fs.writeFile(output, content);
+    if (format === "human") console.log(`Wrote report to ${output}`);
+  } else {
+    process.stdout.write(content);
+  }
 }
 
 async function main() {
@@ -79,6 +97,12 @@ async function main() {
   }
 
   const { positional, options } = parseArgs(rest);
+  if (command === "adapters") {
+    const adapters = listAdapters();
+    if (options.json) console.log(JSON.stringify(adapters, null, 2));
+    else for (const adapter of adapters) console.log(`${adapter.id}\t${adapter.name}\t${adapter.documentation}`);
+    return;
+  }
   if (command === "init") {
     const output = await initContract(path.resolve(positional[0] ?? "."));
     console.log(`Created ${output}`);
@@ -99,21 +123,23 @@ async function main() {
       root: path.resolve(options.root ?? "."),
       base: options.base
     });
-    printResult(result, options.json);
+    await printResult(result, options);
     process.exitCode = result.ok ? 0 : 1;
     return;
   }
 
   if (command === "run") {
-    if (!options.command) throw new Error("run requires --command");
+    if (!options.command && !options.adapter) throw new Error("run requires --adapter or --command");
+    if (options.command && options.adapter) throw new Error("run accepts either --adapter or --command, not both");
     if (!options["allow-exec"]) throw new Error("run requires --allow-exec because it executes a user-supplied command");
     const contract = await loadContract(contractPath);
     const result = await runContract(contract, {
       root: path.resolve(options.root ?? "."),
       command: options.command,
+      adapter: options.adapter,
       keepWorkspace: options["keep-workspace"]
     });
-    printResult(result, options.json);
+    await printResult(result, options);
     process.exitCode = result.ok ? 0 : 1;
     return;
   }

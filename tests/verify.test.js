@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { initializeBaseline } from "../src/git.js";
 import { verifyContract } from "../src/verify.js";
+import { toSarif } from "../src/sarif.js";
 
 const contract = {
   version: 1,
@@ -33,6 +34,9 @@ test("verify rejects denied and out-of-scope changes", async () => {
   assert.equal(result.ok, false);
   assert.ok(result.findings.some((item) => item.rule === "denied-path"));
   assert.ok(result.findings.some((item) => item.rule === "outside-allowed-paths"));
+  const sarif = toSarif(result, "0.2.0");
+  assert.equal(sarif.version, "2.1.0");
+  assert.equal(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri, "secret.pem");
   await fs.rm(root, { recursive: true, force: true });
 });
 

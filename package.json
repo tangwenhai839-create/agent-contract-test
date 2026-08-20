@@ -1,6 +1,6 @@
 {
   "name": "agent-contract-test",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Deterministic contract tests for AI coding agents.",
   "type": "module",
   "bin": {
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "node --test tests/contract.test.js tests/glob.test.js tests/runner.test.js tests/verify.test.js",
-    "lint": "node --check src/cli.js && node --check src/contract.js && node --check src/verify.js && node --check src/runner.js",
+    "lint": "node --check src/cli.js && node --check src/contract.js && node --check src/verify.js && node --check src/runner.js && node --check src/adapters.js && node --check src/sarif.js",
     "verify": "npm run lint && npm test && node src/cli.js validate examples/basic/agent-contract.json && node src/cli.js run examples/basic/agent-contract.json --root examples/basic/fixture --command \"node agent.js\" --allow-exec",
     "demo": "node src/cli.js run examples/basic/agent-contract.json --root examples/basic/fixture --command \"node agent.js\" --allow-exec --keep-workspace"
   },
@@ -34,6 +34,10 @@
     "url": "https://github.com/tangwenhai839-create/agent-contract-test/issues"
   },
   "homepage": "https://github.com/tangwenhai839-create/agent-contract-test#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "files": [
     "src",
     "schema",

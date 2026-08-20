@@ -17,6 +17,18 @@ inputs:
     description: Optional Git base ref used to calculate changed files.
     required: false
     default: ""
+  format:
+    description: Report format (human, json, or sarif).
+    required: false
+    default: human
+  output:
+    description: Optional report output path.
+    required: false
+    default: ""
+  upload-sarif:
+    description: Upload findings to GitHub Code Scanning. Requires security-events write permission.
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -25,7 +37,20 @@ runs:
         ACT_CONTRACT: ${{ inputs.contract }}
         ACT_ROOT: ${{ inputs.root }}
         ACT_BASE: ${{ inputs.base }}
+        ACT_FORMAT: ${{ inputs.format }}
+        ACT_OUTPUT: ${{ inputs.output }}
+        ACT_UPLOAD_SARIF: ${{ inputs['upload-sarif'] }}
       run: |
         args=(verify "$ACT_CONTRACT" --root "$ACT_ROOT")
         if [[ -n "$ACT_BASE" ]]; then args+=(--base "$ACT_BASE"); fi
+        if [[ "$ACT_UPLOAD_SARIF" == "true" ]]; then
+          ACT_FORMAT=sarif
+          ACT_OUTPUT="$RUNNER_TEMP/agent-contract-test.sarif"
+        fi
+        args+=(--format "$ACT_FORMAT")
+        if [[ -n "$ACT_OUTPUT" ]]; then args+=(--output "$ACT_OUTPUT"); fi
         node "$GITHUB_ACTION_PATH/src/cli.js" "${args[@]}"
+    - if: ${{ inputs['upload-sarif'] == 'true' && always() }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ runner.temp }}/agent-contract-test.sarif

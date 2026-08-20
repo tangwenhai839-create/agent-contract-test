@@ -14,14 +14,13 @@ Agent Contract Test 是面向 Codex、Claude Code、Copilot、Gemini、Cursor �
 ## 快速使用
 
 ```bash
-npx --yes github:tangwenhai839-create/agent-contract-test init
-npx --yes github:tangwenhai839-create/agent-contract-test validate agent-contract.json
-npx --yes github:tangwenhai839-create/agent-contract-test verify agent-contract.json --root .
+npm install --save-dev agent-contract-test
+npx actest init
+npx actest validate agent-contract.json
+npx actest verify agent-contract.json --root .
 ```
 
 契约使用JSON格式，适合人工审阅、版本管理和GitHub Actions持续检查。
-
-目前v0.1.0通过GitHub安装，尚未发布到npm公共仓库。
 
 ## 运行代理实验
 
@@ -34,6 +33,24 @@ npx --yes github:tangwenhai839-create/agent-contract-test run agent-contract.jso
 
 工具会复制一个临时工作区再执行命令，普通文件改动不会污染原项目。但这不是操作系统级安全沙箱；不可信命令应在容器或临时机器中运行。
 
+v0.2内置三种适配器：
+
+```bash
+npx actest run agent-contract.json --adapter codex --allow-exec
+npx actest run agent-contract.json --adapter claude --allow-exec
+npx actest run agent-contract.json --adapter gemini --allow-exec
+```
+
+对应的官方CLI需要提前安装并登录。工具不会接收或保存API密钥。
+
+## 安全报告
+
+```bash
+npx actest verify agent-contract.json --format sarif --output results/agent-contract.sarif
+```
+
+生成的SARIF 2.1.0报告可以上传到GitHub Code Scanning。GitHub Action也支持`upload-sarif: true`直接上传；工作流需要授予`security-events: write`权限。
+
 ## 项目方向
 
-我们的目标不是绑定某一家模型，而是建立一套不同AI编程代理都能使用的公开行为契约和验证格式。后续将加入结果报告、代理适配器、容器隔离、重复运行可靠性和签名证据包。
+我们的目标不是绑定某一家模型，而是建立一套不同AI编程代理都能使用的公开行为契约和验证格式。后续将加入可复用契约、容器隔离、重复运行可靠性和签名证据包。

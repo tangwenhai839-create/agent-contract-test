@@ -16,16 +16,16 @@ The roadmap is ordered by ecosystem usefulness, not by feature count.
 ## v0.2 — CI evidence
 
 - SARIF output for GitHub Code Scanning.
+- Built-in Codex CLI, Claude Code, and Gemini CLI adapters.
+- npm package with trusted publishing and provenance.
+- GitHub Marketplace Action.
+
+## v0.3 — Reusable contracts and reports
+
 - Markdown job summaries and JUnit output.
 - Regex and hash assertions.
 - Contract inheritance and reusable fragments.
 - Stable finding identifiers and suppressions with reasons.
-
-## v0.3 — Provider adapters
-
-- Codex CLI adapter.
-- Claude Code adapter.
-- Gemini CLI adapter.
 - GitHub Copilot CLI adapter.
 - Adapter conformance tests that use synthetic repositories.
 

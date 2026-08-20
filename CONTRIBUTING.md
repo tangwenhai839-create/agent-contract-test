@@ -17,7 +17,11 @@ npm install
 npm run verify
 ```
 
-The project intentionally has no runtime dependencies in v0.1. Discuss new runtime dependencies before adding them.
+The project intentionally has no runtime dependencies. Discuss new runtime dependencies before adding them.
+
+## Pilot repositories
+
+Maintainers who want to try Agent Contract Test can open a **Pilot repository** issue. Start with one real, low-risk agent task and report the CLI, operating system, contract, and result. Private source code and agent transcripts are not required.
 
 ## Pull requests
 

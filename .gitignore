@@ -1,5 +1,6 @@
 node_modules/
 coverage/
 .agent-contract-runs/
+.agent-contract-test/
 *.log
 .DS_Store

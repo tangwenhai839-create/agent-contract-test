@@ -1,0 +1,37 @@
+name: Pilot repository
+description: Try Agent Contract Test on a real repository and share compatibility feedback.
+title: "[Pilot] "
+labels: [pilot]
+body:
+  - type: input
+    attributes:
+      label: Repository or project type
+      description: Link a public repository, or describe a private repository without sharing source.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Agent CLI
+      options:
+        - Codex CLI
+        - Claude Code
+        - Gemini CLI
+        - Custom command
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Platform and versions
+      description: Operating system, Node.js version, and agent CLI version.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Task and contract outcome
+      description: Describe the task, the expected boundary, and whether the contract passed or caught a problem.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Friction or missing capability
+      description: What made setup or interpretation harder than it should be?
