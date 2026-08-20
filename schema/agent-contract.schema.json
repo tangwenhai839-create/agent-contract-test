@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-contract-test.dev/schema/v1.json",
+  "title": "Agent Contract Test",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "name", "task", "assertions"],
+  "properties": {
+    "version": { "const": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt"],
+      "properties": {
+        "prompt": { "type": "string", "minLength": 1 },
+        "timeoutMs": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow": { "type": "array", "items": { "type": "string" } },
+        "deny": { "type": "array", "items": { "type": "string" } },
+        "maxChangedFiles": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "enum": ["file_exists", "file_not_exists", "file_contains", "file_not_contains", "command"] },
+          "path": { "type": "string" },
+          "pattern": { "type": "string" },
+          "command": { "type": "string" },
+          "timeoutMs": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

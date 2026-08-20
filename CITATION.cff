@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If Agent Contract Test supports your research or engineering work, please cite the repository."
+title: "Agent Contract Test"
+type: software
+authors:
+  - name: "Agent Contract Test contributors"
+repository-code: "https://github.com/tangwenhai839-create/agent-contract-test"
+url: "https://github.com/tangwenhai839-create/agent-contract-test"
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-08-20

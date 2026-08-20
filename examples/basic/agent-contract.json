@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schema/agent-contract.schema.json",
+  "version": 1,
+  "name": "add-ready-feature",
+  "task": {
+    "prompt": "Create src/ready.js exporting a boolean named ready. Do not modify unrelated files."
+  },
+  "boundaries": {
+    "allow": ["src/**"],
+    "deny": [".env", "**/*.pem", "**/*.key"],
+    "maxChangedFiles": 2
+  },
+  "assertions": [
+    { "type": "file_exists", "path": "src/ready.js" },
+    { "type": "file_contains", "path": "src/ready.js", "pattern": "export const ready = true" },
+    { "type": "command", "command": "node --test", "timeoutMs": 30000 }
+  ]
+}

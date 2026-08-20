@@ -1,0 +1,5 @@
+node_modules/
+coverage/
+.agent-contract-runs/
+*.log
+.DS_Store

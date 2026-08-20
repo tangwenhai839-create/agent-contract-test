@@ -1,0 +1,20 @@
+name: Agent adapter request
+description: Propose support for another coding-agent CLI.
+body:
+  - type: input
+    attributes:
+      label: Agent CLI
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Non-interactive invocation
+      description: Documented command, prompt input method, exit behavior, and links.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Security considerations
+      description: Authentication, permission flags, network access, and sandbox behavior.
+    validations:
+      required: true

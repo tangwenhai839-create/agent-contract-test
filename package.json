@@ -1,0 +1,44 @@
+{
+  "name": "agent-contract-test",
+  "version": "0.1.0",
+  "description": "Deterministic contract tests for AI coding agents.",
+  "type": "module",
+  "bin": {
+    "agent-contract-test": "src/cli.js",
+    "actest": "src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "lint": "node --check src/cli.js && node --check src/contract.js && node --check src/verify.js && node --check src/runner.js",
+    "verify": "npm run lint && npm test && node src/cli.js validate examples/basic/agent-contract.json && node src/cli.js run examples/basic/agent-contract.json --root examples/basic/fixture --command \"node agent.js\" --allow-exec",
+    "demo": "node src/cli.js run examples/basic/agent-contract.json --root examples/basic/fixture --command \"node agent.js\" --allow-exec --keep-workspace"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "ai-agents",
+    "coding-agents",
+    "codex",
+    "claude-code",
+    "testing",
+    "github-actions",
+    "agent-evaluation"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tangwenhai839-create/agent-contract-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tangwenhai839-create/agent-contract-test/issues"
+  },
+  "homepage": "https://github.com/tangwenhai839-create/agent-contract-test#readme",
+  "files": [
+    "src",
+    "schema",
+    "action.yml",
+    "README.md",
+    "LICENSE"
+  ]
+}
