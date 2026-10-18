@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 const ADAPTERS = {
   codex: {
     name: "Codex CLI",
@@ -35,4 +38,52 @@ export function adapterProcess(id, prompt) {
     stdin: adapter.prompt === "stdin" ? prompt : "",
     adapter: id
   };
+}
+
+export function resolveExecutable(executable, env = process.env, platform = process.platform) {
+  if (platform !== "win32" || path.win32.basename(executable) !== executable || path.win32.extname(executable)) {
+    return executable;
+  }
+
+  const envPath = pathValue(env);
+  if (!envPath) return executable;
+
+  const extensions = (env.PATHEXT || ".COM;.EXE;.BAT;.CMD")
+    .split(";")
+    .map((extension) => extension.trim())
+    .filter(Boolean);
+  const seen = new Set();
+
+  for (const directory of envPath.split(";").filter(Boolean)) {
+    for (const extension of extensions) {
+      const normalized = extension.startsWith(".") ? extension : `.${extension}`;
+      for (const suffix of [normalized, normalized.toLowerCase(), normalized.toUpperCase()]) {
+        const filename = `${executable}${suffix}`;
+        const candidate = path.join(directory, filename);
+        if (seen.has(candidate)) continue;
+        seen.add(candidate);
+        if (fs.existsSync(candidate)) return path.join(directory, actualDirectoryEntry(directory, filename));
+      }
+    }
+  }
+
+  return executable;
+}
+
+function actualDirectoryEntry(directory, filename) {
+  try {
+    const exact = fs.readdirSync(directory).find((entry) => entry === filename);
+    if (exact) return exact;
+    const lowerFilename = filename.toLowerCase();
+    const insensitive = fs.readdirSync(directory).find((entry) => entry.toLowerCase() === lowerFilename);
+    return insensitive ?? filename;
+  } catch {
+    return filename;
+  }
+}
+
+function pathValue(env) {
+  if (env.PATH) return env.PATH;
+  const entry = Object.entries(env).find(([key]) => key.toUpperCase() === "PATH");
+  return entry?.[1] ?? "";
 }
